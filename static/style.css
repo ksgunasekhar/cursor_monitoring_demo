@@ -1,0 +1,40 @@
+:root {
+  color-scheme: light;
+  --text: #1c1917;
+  --muted: #44403c;
+  --paper: #fafaf9;
+  --line: #e7e5e4;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--text);
+  font-family: "Segoe UI", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 1.125rem;
+  line-height: 1.6;
+}
+
+.page {
+  max-width: 40rem;
+  margin: 0 auto;
+  padding: 4.5rem 1.5rem 3rem;
+}
+
+h1 {
+  margin: 0 0 1rem;
+  font-size: 2rem;
+  font-weight: 650;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+}
+
+.lead {
+  margin: 0;
+  color: var(--muted);
+  font-size: 1.125rem;
+}
