@@ -8,7 +8,20 @@
 </head>
 <body>
   <div class="page">
+    {% if session.get('user') %}
+    <header class="top">
+      <a class="brand" href="{{ url_for('server_list') }}">Demo Server Monitoring</a>
+      <nav>
+        <a href="{{ url_for('servers_page') }}">Servers</a>
+        <form method="post" action="{{ url_for('logout') }}">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <button type="submit" class="link">Sign out</button>
+        </form>
+      </nav>
+    </header>
+    {% endif %}
     {% block content %}{% endblock %}
   </div>
+  {% block scripts %}{% endblock %}
 </body>
 </html>

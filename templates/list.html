@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block title %}Servers — Demo Server Monitoring{% endblock %}
+
+{% block content %}
+  <div data-refresh="{{ url_for('servers_json') }}" data-refresh-kind="list">
+    <h1>Server list</h1>
+    <p class="lead">Latest sample from each saved server. <a href="{{ url_for('servers_page') }}">Add or remove servers</a>.</p>
+    {% if error %}
+      <p class="error" role="alert">{{ error }}</p>
+    {% elif not servers %}
+      <p>No servers yet. Add one on the Servers page.</p>
+    {% else %}
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Host</th>
+              <th>Status</th>
+              <th>CPU</th>
+              <th>Memory</th>
+              <th>Last success</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for server in servers %}
+            <tr>
+              <td><a href="{{ url_for('server_detail', server_id=server.id) }}">{{ server.name }}</a></td>
+              <td>{{ server.host }}</td>
+              <td id="status-{{ server.id }}">{{ server.status }}</td>
+              <td id="cpu-{{ server.id }}">{{ server.cpu_text }}</td>
+              <td id="memory-{{ server.id }}">{{ server.memory_text }}</td>
+              <td id="seen-{{ server.id }}">{{ server.last_success_text }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% endif %}
+    <noscript><p class="hint">Reload the page to load a new sample.</p></noscript>
+  </div>
+{% endblock %}
+
+{% block scripts %}
+  <script src="{{ url_for('static', filename='refresh.js') }}"></script>
+{% endblock %}
