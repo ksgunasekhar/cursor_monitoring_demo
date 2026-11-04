@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+
+{% block title %}Manage servers — Demo Server Monitoring{% endblock %}
+
+{% block content %}
+  <h1>Servers</h1>
+  <p class="lead">Add a Linux host to poll. Removing a server deletes the local entry only.</p>
+
+  <section class="card">
+    <h2>Add a server</h2>
+    {% if errors %}
+      <div class="error" role="alert">
+        {% for message in errors %}
+          <p>{{ message }}</p>
+        {% endfor %}
+      </div>
+    {% endif %}
+    <form method="post" action="{{ url_for('servers_page') }}" autocomplete="off">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <div class="field">
+        <label for="name">Display name</label>
+        <input id="name" name="name" type="text" value="{{ values.name }}">
+      </div>
+      <div class="field">
+        <label for="host">Hostname or IP</label>
+        <input id="host" name="host" type="text" value="{{ values.host }}">
+      </div>
+      <div class="field">
+        <label for="port">SSH port</label>
+        <input id="port" name="port" type="number" min="1" max="65535" value="{{ values.port }}">
+      </div>
+      <div class="field">
+        <label for="username">SSH username</label>
+        <input id="username" name="username" type="text" value="{{ values.username }}" autocomplete="off">
+      </div>
+      <div class="field">
+        <label for="password">Password</label>
+        <input id="password" name="password" type="password" value="" autocomplete="new-password">
+      </div>
+      <div class="field">
+        <label for="key_path">Private key path</label>
+        <input id="key_path" name="key_path" type="text" value="{{ values.key_path }}" autocomplete="off">
+      </div>
+      <p class="hint">Enter a password or a private key path on this machine. One of them is required.</p>
+      <button class="primary" type="submit">Add server</button>
+    </form>
+  </section>
+
+  <section class="card">
+    <h2>Saved servers</h2>
+    {% if load_error %}
+      <p class="error" role="alert">{{ load_error }}</p>
+    {% elif not servers %}
+      <p>No servers saved yet.</p>
+    {% else %}
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Host</th>
+              <th>Port</th>
+              <th>Username</th>
+              <th>Auth</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for server in servers %}
+            <tr>
+              <td><a href="{{ url_for('server_detail', server_id=server.id) }}">{{ server.name }}</a></td>
+              <td>{{ server.host }}</td>
+              <td>{{ server.port }}</td>
+              <td>{{ server.username }}</td>
+              <td>{{ server.auth }}</td>
+              <td>
+                <form method="post" action="{{ url_for('remove_server_route', server_id=server.id) }}" onsubmit="return confirm('Remove this server from the local list? This does not change the remote host.');">
+                  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                  <button type="submit">Remove</button>
+                </form>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% endif %}
+  </section>
+{% endblock %}

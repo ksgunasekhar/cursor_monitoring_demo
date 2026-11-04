@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+
+{% block title %}{% if server %}{{ server.name }} — {% endif %}Demo Server Monitoring{% endblock %}
+
+{% block content %}
+  {% if error %}
+    <p class="error" role="alert">{{ error }}</p>
+  {% elif server %}
+  <div data-refresh="{{ url_for('server_json', server_id=server.id) }}" data-refresh-kind="detail">
+    <p class="hint"><a href="{{ url_for('server_list') }}">Back to the list</a></p>
+    <h1>{{ server.name }}</h1>
+    <p class="lead">{{ server.host }}</p>
+    <dl class="facts">
+      <div>
+        <dt>Status</dt>
+        <dd id="server-status">{{ server.status }}</dd>
+      </div>
+      <div>
+        <dt>Last success</dt>
+        <dd id="server-last-success">{{ server.last_success_text }}</dd>
+      </div>
+    </dl>
+    <p id="server-message" class="error" {% if not server.message %}hidden{% endif %}>{{ server.message }}</p>
+
+    <section class="card">
+      <h2>CPU</h2>
+      <p id="server-cpu">{{ server.cpu_text }}</p>
+    </section>
+
+    <section class="card">
+      <h2>Memory</h2>
+      <p id="server-memory">{{ server.memory_text }}</p>
+    </section>
+
+    <section class="card">
+      <h2>Network</h2>
+      <p class="hint">Rates appear after two samples about 15 seconds apart.</p>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Interface</th>
+              <th>Received</th>
+              <th>Transmitted</th>
+              <th>Receive rate</th>
+              <th>Transmit rate</th>
+            </tr>
+          </thead>
+          <tbody id="network-rows">
+            {% if server.network %}
+              {% for iface in server.network %}
+              <tr>
+                <td>{{ iface.name }}</td>
+                <td>{{ iface.rx_text }}</td>
+                <td>{{ iface.tx_text }}</td>
+                <td>{{ iface.rx_rate_text }}</td>
+                <td>{{ iface.tx_rate_text }}</td>
+              </tr>
+              {% endfor %}
+            {% else %}
+              <tr>
+                <td colspan="5">No network data.</td>
+              </tr>
+            {% endif %}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Listening ports</h2>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Protocol</th>
+              <th>Address</th>
+              <th>Port</th>
+              <th>Process</th>
+            </tr>
+          </thead>
+          <tbody id="ports-rows">
+            {% if server.ports %}
+              {% for port in server.ports %}
+              <tr>
+                <td>{{ port.protocol }}</td>
+                <td>{{ port.address }}</td>
+                <td>{{ port.port }}</td>
+                <td>{{ port.process_text }}</td>
+              </tr>
+              {% endfor %}
+            {% else %}
+              <tr>
+                <td colspan="4">No listening ports.</td>
+              </tr>
+            {% endif %}
+          </tbody>
+        </table>
+      </div>
+    </section>
+    <noscript><p class="hint">Reload the page to load a new sample.</p></noscript>
+  </div>
+  {% endif %}
+{% endblock %}
+
+{% block scripts %}
+  {% if server %}
+  <script src="{{ url_for('static', filename='refresh.js') }}"></script>
+  {% endif %}
+{% endblock %}
